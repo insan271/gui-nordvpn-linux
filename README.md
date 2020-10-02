@@ -8,11 +8,14 @@ Features:
 - Killswitch
 
 Preview trayicon:
+
 ![tray](https://github.com/insan271/gui-nordvpn-linux/blob/assets/.preview/tray.png)
+
 ![tray2](https://github.com/insan271/gui-nordvpn-linux/blob/assets/.preview/tray2.png)
 
 
 Preview GUI:
+
 ![gui](https://github.com/insan271/gui-nordvpn-linux/blob/assets/.preview/gui.png)
 
 # System requirements:
@@ -27,14 +30,19 @@ Preview GUI:
 
 # Installation:
 Download in terminal(**git clone https://github.com/insan271/gui-nordvpn-linux.git**).
+
 In terminal give install.sh executable permision(**cd gui-nordvpn-linux && chmod +x install.sh**).
+
 Run the install script(**./install.sh**).
+
 If the install failed make sure to run the uninstall script for cleaning up.
 Bug reports should contain the ouput from the install script and the output of sudo systemctl status nvpn.service.
 
 # Uninstall:
 Open a terminal in the location uninstall.sh is present.
+
 Give it executable permision(**chmod +x uninstall.sh**).
+
 Run the uninstall script(**./uninstall.sh**).
 
 
@@ -48,7 +56,7 @@ The vpn directory is the systemd service that controls the vpn.
 The vpncontrol directory is the gui and trayicon that controls the vpn service with a unix socket.
 
 
-
+<pre>
 ├── install.sh # The install script
 ├── installTools # Tools used by install.sh
 │   ├── setupAutostart.py # Creates trayicon on user login(The gui part. vpncontrol package)
@@ -70,4 +78,4 @@ The vpncontrol directory is the gui and trayicon that controls the vpn service w
     ├── viewTrayicon.py # The systems trayicon
     └── vpn.svg # Image used by trayicon
 
-
+</pre>
