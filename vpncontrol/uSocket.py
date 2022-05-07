@@ -14,6 +14,7 @@ def send(message):
         client = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
         client.connect("\0vpn")
         client.send(message.encode())
+        client.close()
     except:
         pass
 
@@ -21,9 +22,10 @@ def send(message):
 def start_reciever(notifyer, tooltip):
     """
     (Notify.Notification(), Gtk.StatusIcon.set_tooltip_text()) ->
-   
+
     Starts a unix socket server for receiving messages from vpn scripts.
     """
+
     def usock(notifyer, tooltip):
         server = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
         server.bind("\0trayiconvpn")
@@ -37,7 +39,7 @@ def start_reciever(notifyer, tooltip):
             elif "Stopped" in data.decode():
                 tooltip("No vpn connection")
 
-    signal.signal(signal.SIGINT, stop_receiver) # Capture sigint for closing the server
+    signal.signal(signal.SIGINT, stop_receiver)  # Capture sigint for closing the server
     Thread(
         target=usock,
         args=(
