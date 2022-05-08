@@ -20,6 +20,16 @@ case $(which apt && which systemd && echo "ok") in
         exit 1;
 esac
 
+# Checking for internet
+wget -q --spider http://google.com
+if [ $? -eq 0 ]; then
+    echo "Connected to internet: OK"
+else
+    echo "Failed to install. No internet detected."
+    exit 1
+    
+fi
+
 # Checking if bc is installed BUG FIX rpi4.
 case $(which bc) in
     *bin*)
@@ -39,7 +49,7 @@ else
 fi
 
 # Checking if kill switch is supported. Router ip range needs to be 192.168.1.* else system not supported
-case $(route | grep "192.168.1.0" | head -n 1) in
+case $(sudo route | grep "192.168.1.0" | head -n 1) in
     *"192.168.1.0"*)
         echo "Killswitch support. OK.";;
         
@@ -51,11 +61,11 @@ esac
 
 # Installing needed dependencies
 echo "Installing needed apt dependencies: "
-sudo apt install openvpn libgirepository1.0-dev gcc libcairo2-dev pkg-config python3-dev gir1.2-gtk-3.0 python3-venv resolvconf
+sudo apt install iptables openvpn libgirepository1.0-dev gcc libcairo2-dev pkg-config python3-dev gir1.2-gtk-3.0 python3-venv resolvconf
 
 # Creating installation path
 basePATH="$( cd "$( dirname "$BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)"
-mkdir $HOME/.nvpn 
+mkdir -p $HOME/.nvpn 
 sudo cp -r $basePATH/vpn $HOME/.nvpn 
 sudo chown -R root $HOME/.nvpn/vpn # Makes root owner. 
 sudo chmod -R 700  $HOME/.nvpn/vpn  # Vpn needs root permission. User is not allowed to edit files(security risk)
@@ -95,6 +105,7 @@ authFile="$uvar\n$p1var"
 sudo sh -c "echo '${authFile}'  > /etc/openvpn/pass.txt"
 sudo chmod 600 /etc/openvpn/pass.txt # Only root can read the file
 
+
 # Creating python venv and installing dependencies for vpncontrol
 python3 -m venv $HOME/.nvpn/vpncontrol/venv
 echo "Installing created python venv dependencies with pip:"
@@ -102,13 +113,6 @@ $HOME/.nvpn/vpncontrol/venv/bin/pip install -r $HOME/.nvpn/vpncontrol/requiremen
 
 # Creating auto startup when user logs in.
 python3 $basePATH/installTools/setupAutostart.py > $HOME/.config/autostart/vpncontrol.desktop
-
-# Creating systemd service
-serviceText="$(python3 ${basePATH}/installTools/setupService.py)"
-sudo sh -c "echo '${serviceText}' > /etc/systemd/system/nvpn.service"
-sudo systemctl enable nvpn.service
-sudo systemctl daemon-reload
-sudo systemctl start nvpn.service 
  
 # Downloading images for vpncontroller gui
 cd $HOME/.nvpn/vpncontrol/flags
@@ -116,6 +120,19 @@ echo "Downloading images needed for gui."
 curl -O https://flagcdn.com/128x96.zip
 unzip 128x96.zip
 mv gb.png uk.png # Rename file so it is correct name for vpn gui script
+
+# Creating novpn for running commands in split tunnel
+#sudo (echo "#\!$(which python3)" && cat $basePATH/novpn/novpn.py)> /usr/local/bin/novpn
+(echo "#!$(which python3)"&& cat $basePATH/novpn/novpn.py) > temp
+sudo mv temp /usr/local/bin/novpn
+sudo chmod +x /usr/local/bin/novpn
+
+# Creating systemd service
+serviceText="$(python3 ${basePATH}/installTools/setupService.py)"
+sudo sh -c "echo '${serviceText}' > /etc/systemd/system/nvpn.service"
+sudo systemctl enable nvpn.service
+sudo systemctl daemon-reload
+sudo systemctl start nvpn.service 
 
 # Waiting for ovpn files installed and ready
 echo "Waiting for ovpn files installed and ready."
@@ -133,8 +150,16 @@ do
 
 done
 
-# Starting trayicon
 echo "Starting trayicon."
-($HOME/.nvpn/vpncontrol/venv/bin/python3 $HOME/.nvpn/vpncontrol/main.py) &
+
+# Fix script started in SSH
+case $(pstree -ps $$) in
+
+  *"ssh"*)
+   (export DISPLAY=:0 &&  $HOME/.nvpn/vpncontrol/venv/bin/python3 $HOME/.nvpn/vpncontrol/main.py &>/dev/null) &
+    ;;
+  *) 
+  ($HOME/.nvpn/vpncontrol/venv/bin/python3 $HOME/.nvpn/vpncontrol/main.py &>/dev/null) &
+esac
 
 

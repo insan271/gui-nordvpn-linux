@@ -17,6 +17,7 @@ sudo pkill -f openvpn
 sudo iptables -F 
 sudo iptables -P OUTPUT ACCEPT
 
+sudo rm /usr/local/bin/novpn
 sudo rm -r $HOME/.nvpn
 sudo rm -f /etc/systemd/system/nvpn.service
 sudo rm -f /etc/openvpn/pass.txt

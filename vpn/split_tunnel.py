@@ -49,7 +49,7 @@ def create_split_tunnel():
     ]
 
     for x in rules:
-        subprocess.run(shlex.split(x))
+        subprocess.run(x, shell=True)
 
 
 def stop_split_tunnel():
