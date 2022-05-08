@@ -4,6 +4,7 @@ import time, json
 from typing import List
 from uSocket import send_to_gui, start_Usocket, send_to_self
 import logging
+from split_tunnel import create_split_tunnel
 
 """
 
@@ -18,7 +19,7 @@ PATH_HOME = "/".join(
 )  # Fixed, script runs as root so can't find users home with other methods.
 PATH_VPN_FILES = os.path.join(os.path.dirname(__file__), "ovpn_tcp")
 
-# Allows only one thread to run when 2 threads acquired the semaphore.
+# Allows only one thread to run when 2 threads acquired the same semaphore.
 # Stops racecondition between connectivity_monitor and vpn.reconnect|vpn.connect
 semaphore = threading.BoundedSemaphore()
 
@@ -131,20 +132,24 @@ class _connectivity:
                 ).stdout.decode()
                 if "1 received" in ping:
                     logging.info("Connectivity ping success")
-                    # return True
-                    return_val = True
-                    break
+                    return True
+                    # return_val = True
+                    # break
             time.sleep(1)
         cls.connectivity_reset_timers()
 
         # If failed try ping google as fall back
+
         if not return_val and "tun" in result:
-            out = subprocess.check_output(
-                "timeout 3 ping -c 1 google.com", shell=True
-            ).decode()
+            out = subprocess.run(
+                "timeout 3 ping -c 1 google.com", shell=True, capture_output=True
+            ).stdout.decode()
             logging.info("Connectivity ping failed. trying ping google instead")
-            return True if "1 received" in out else False
-        return return_val
+            if "1 received" in out:
+                logging.info("Connectivity ping google success")
+                return True
+            return False
+        return False
 
 
 class _vpn(object):
@@ -209,6 +214,8 @@ class _vpn(object):
             self.active = True
             _connectivity.connectivity_reset_timers()
             logging.info("connection complete")
+            create_split_tunnel()
+            logging.info("split tunnel available")
             send_to_gui(f"Connected to {location}")
 
         else:
@@ -222,7 +229,7 @@ class _vpn(object):
         """
         Connects to the most used vpn location if auto connect is enabled.
         """
-        logging.info(f"called")
+        logging.info("called")
         sfile = os.path.join(PATH_HOME, ".nvpn", ".autoconnect")
         if os.path.exists(sfile):  # Autoconnect file exists.
             counter = os.path.join(PATH_HOME, ".nvpn", "counter.json")
@@ -255,6 +262,7 @@ class _vpn(object):
 
         for x in rules:
             subprocess.run(shlex.split(x))
+        logging.info("kill switch ON")
 
     @staticmethod
     def stop_kill_switch(keep_internet_blocked=False):
@@ -266,7 +274,6 @@ class _vpn(object):
             "iptables -F",
             "iptables -P OUTPUT ACCEPT",
         ]
-
         if keep_internet_blocked:
             rules.pop()
             rules.append("iptables -P OUTPUT DROP")
@@ -314,7 +321,8 @@ class _vpn(object):
 
         Return a random ovpn file for input location.
         """
-        temp = [x for x in self._vpn_files if location in x.split(".")[0]]
+        # temp = [x for x in self._vpn_files if location in x.split(".")[0]]
+        temp = [x for x in self._vpn_files if location in x.split("-")[-1][:2]]
         assert temp, "Expected to find vpn files"
         return random.choice(temp)
 
