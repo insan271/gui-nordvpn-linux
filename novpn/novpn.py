@@ -24,7 +24,7 @@ user = (
 signal.signal(signal.SIGINT, lambda s, f: sys.exit(0))
 
 cmd = " ".join(sys.argv[1:])
-base_cmd = f'sudo ip netns exec novpn runuser {user} -c "{cmd}"'
+base_cmd = f'sudo ip netns exec novpn runuser {user} -c "export XDG_RUNTIME_DIR=/run/user/$(id -u {user}) && {cmd}"'
 
 client = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
 client.connect("\0trayiconvpn")

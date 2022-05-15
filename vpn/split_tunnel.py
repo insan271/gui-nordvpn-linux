@@ -1,5 +1,4 @@
 import subprocess, shlex
-import uSocket
 
 
 def _NS_exists() -> bool:
@@ -20,8 +19,6 @@ def create_split_tunnel():
         .decode()
         .strip()
     )
-    IFACE_NS = ""
-    IFACE_NOVPN = ""
     GETAWAY = (
         subprocess.check_output("ip route | awk '/default/ { print $3 }'", shell=True)
         .decode()
