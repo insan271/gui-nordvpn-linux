@@ -40,6 +40,8 @@ def start_reciever(notifyer, tooltip):
             elif "AUTH Failed" in data.decode():
                 notifyer("AUTH FAILED", "Uninstall and reinstall nvpn required").show()
                 tooltip("BAD AUTH: please reinstall nvpn with correct credentials")
+            elif "splittunnel" in data.decode():
+                notifyer("SplitTunnel", data.decode()).show()
             elif "Stopped" in data.decode():
                 tooltip("No vpn connection")
 

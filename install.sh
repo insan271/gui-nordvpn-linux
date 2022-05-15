@@ -137,6 +137,7 @@ sudo systemctl start nvpn.service
 # Creating novpn for accessing split tunnel
 sudo mkdir -p /usr/local/lib/novpn
 sudo cp $basePATH/novpn/novpn.py /usr/local/lib/novpn/
+sudo sed -i "1 i \#\!$(which python3)" /usr/local/lib/novpn/novpn.py
 sudo cp $basePATH/novpn/novpn.sh /usr/local/bin/novpn
 sudo chmod +x /usr/local/bin/novpn
 sudo chmod 750 /usr/local/lib/novpn/novpn.py

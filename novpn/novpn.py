@@ -1,6 +1,7 @@
 import sys
 import subprocess
 import signal
+import socket
 
 """
 novpn cmd
@@ -24,4 +25,10 @@ signal.signal(signal.SIGINT, lambda s, f: sys.exit(0))
 
 cmd = " ".join(sys.argv[1:])
 base_cmd = f'sudo ip netns exec novpn runuser {user} -c "{cmd}"'
+
+client = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
+client.connect("\0trayiconvpn")
+client.send(f"Starting {cmd} in splittunnel".encode())
+client.close()
+
 subprocess.run(base_cmd, shell=True)
