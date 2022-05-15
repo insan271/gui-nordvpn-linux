@@ -1,11 +1,14 @@
 # gui-nordvpn-linux description:
+
 A gui for connecting to nordvpn servers on linux mint.
 It uses openvpn for connecting to nordvpn servers. And gtk for python to create a system trayicon and gui.
 
 Features:
+
 - Autoconnect on boot
 - Controlled by a trayicon
 - Killswitch
+- Split-tunnel
 
 Preview trayicon:
 
@@ -13,69 +16,101 @@ Preview trayicon:
 
 ![tray2](https://github.com/insan271/gui-nordvpn-linux/blob/assets/.preview/tray2.png)
 
-
 Preview GUI:
 
 ![gui](https://github.com/insan271/gui-nordvpn-linux/blob/assets/.preview/gui.png)
 
 # System requirements:
-- Linux Mint (Also made it work on Raspberry PI OS. So it could work on everything debian/ubuntu based but is not tested.)
-- Systems installed python3 >= 3.6
+
+- Linux Mint (Also made it work on Raspberry PI OS. So it could work on everything debian/ubuntu based but this is not tested.)
+- Systems installed python3 >= 3.7
 - System uses systemd and can install packages with apt
-- Router ip range is in 192.168.1.* (Killswitch assumes this)
 
 # Don't install when:
+
 - You use iptables for other applications. Stopping a vpn conection is currently programmed to flush all rules.
 - Multiple users are on your linux installation. The trayicon only shows for the user that installed it. The systemd service starts for every user login.
 
 # Installation:
-Download in terminal(**git clone https://github.com/insan271/gui-nordvpn-linux.git**).
 
-In terminal give install.sh executable permision(**cd gui-nordvpn-linux && chmod +x install.sh**).
+Follow these steps in a terminal.
 
-Run the install script(**./install.sh**).
+Download :
+
+**git clone https://github.com/insan271/gui-nordvpn-linux.git**
+
+Give install.sh executable permision:
+
+**cd gui-nordvpn-linux && chmod +x install.sh**
+
+Run the install script:
+
+**./install.sh**
+
+Important use the Advanced configuration:Service credentials (manual setup)
+found on https://my.nordaccount.com/dashboard/nordvpn/ in the install script. These are different from the regular username and password.
+
+Once installed the credentials can't be changed.
+So make sure these are correct or a uninstall and reinstall are needed.
 
 If the install failed make sure to run the uninstall script for cleaning up.
 Bug reports should contain the ouput from the install script and the output of sudo systemctl status nvpn.service.
 
 # Uninstall:
+
 Open a terminal in the location uninstall.sh is present.
 
 Give it executable permision(**chmod +x uninstall.sh**).
 
 Run the uninstall script(**./uninstall.sh**).
 
+# Using the split-tunnel:
 
+A split-tunnel allows to run an application outside the vpn connection.
 
+To start an application in the splittunnel run this in a terminal:
 
+**novpn cmd** where cmd is the command
 
+Example:
+
+**novpn firefox**
+
+Or for desktop icons right click and select **Properties**
+and add **novpn** in front of the **Command Field**
 
 # Note's for other developers that will read the code:
-These scripts are 2 separate programs.
+
+These scripts are 3 separate programs.
 The vpn directory is the systemd service that controls the vpn.
 The vpncontrol directory is the gui and trayicon that controls the vpn service with a unix socket.
-
+The novpn directory contains scripts to start an application in the split-tunnel
 
 <pre>
 ├── install.sh # The install script
 ├── installTools # Tools used by install.sh
-│   ├── setupAutostart.py # Creates trayicon on user login(The gui part. vpncontrol package)
-│   └── setupService.py # Creates the service that controls the vpn(vpn package)
-├── README
+│   ├── setupAutostart.py # Creates autostart on login
+│   └── setupService.py # Creates the systemd service
+├── LICENSE
+├── novpn
+│   ├── novpn.py # Starts process in split-tunel
+│   └── novpn.sh # Linker to novpn.py that will be inserted in linux PATH env
+├── README.md
 ├── uninstall.sh # Uninstall script
 ├── vpn # Systemd service runs as root 
+│   ├── connectivity.py # A monitor that tests connectivity and reconnects when needed.
 │   ├── main.py
+│   ├── split_tunnel.py # Configures a split-tunnel network interface
 │   ├── updater.py # Updates the nord ovpn files every 10 days
-│   ├── uSocket.py # Unix socket for communication from vpncontrol(gui)
-│   └── vpn.py # The code that handled the vpn and kill switch
+│   ├── uSocket.py # Unix socket for communication to vpncontrol(gui)
+│   └── vpn.py # The code that handles the vpn and kill switch
 └── vpncontrol
     ├── flags # Directory will hold images for the gui
-    ├── helperFlaglist.py # Functions use by viewFlaglist.py gui. 
+    ├── helperFlaglist.py # Functions used by viewFlaglist.py gui. 
     ├── main.py
     ├── requirements.txt # Pip requirements for install.sh for creating a venv
     ├── uSocket.py # Unix socket for communication with vpn service
     ├── viewFlaglist.py # The gui where you can select a vpn server
     ├── viewTrayicon.py # The systems trayicon
     └── vpn.svg # Image used by trayicon
-
 </pre>

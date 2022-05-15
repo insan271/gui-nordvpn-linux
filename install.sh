@@ -74,7 +74,10 @@ cp -r $basePATH/vpncontrol $HOME/.nvpn
 # Creating login file for vpn account
 while :
 do
-    echo "Give the username for your nordvpn account" 
+    echo "IMPORTANT use Service credentials (manual setup) found on:"
+    echo "https://my.nordaccount.com/dashboard/nordvpn/"
+    echo "These are different from the regular username and password"
+    echo "Insert the username credential" 
     read -p 'Username: ' uvar
     echo "Confirm that $uvar is the correct with Y or N \n:"
     read ansvar
