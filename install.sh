@@ -134,6 +134,16 @@ sudo systemctl enable nvpn.service
 sudo systemctl daemon-reload
 sudo systemctl start nvpn.service 
 
+# Creating novpn for accessing split tunnel
+sudo mkdir -p /usr/local/lib/novpn
+sudo cp $basePATH/novpn/novpn.py /usr/local/lib/novpn/
+sudo cp $basePATH/novpn/novpn.sh /usr/local/bin/novpn
+sudo chmod +x /usr/local/bin/novpn
+sudo chmod 750 /usr/local/lib/novpn/novpn.py
+# Making novpn accessible for none sudo users 
+sudo su -c 'echo "ALL ALL = NOPASSWD:/usr/local/lib/novpn/novpn.py" > /etc/sudoers.d/novpn'
+sudo chmod 440 /etc/sudoers.d/novpn
+
 # Waiting for ovpn files installed and ready
 echo "Waiting for ovpn files installed and ready."
 x=1 # Counter bug fix rpi4. rpi never shows "Update vpn files complete."

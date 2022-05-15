@@ -1,5 +1,4 @@
 import signal, socket, sys
-from split_tunnel import run_in_split_tunnel
 
 
 def start_Usocket(vpn):
@@ -15,6 +14,7 @@ def start_Usocket(vpn):
     # Stop called by sigint.
     def end(sig, frame):
         print("sig end")
+        vpn.stop()
         nonlocal server
         server.close()
         sys.exit(0)
@@ -33,7 +33,6 @@ def start_Usocket(vpn):
                 b"connect": lambda: vpn.connect(temp[1]),
                 b"stop": lambda: vpn.stop(),
                 b"reconnect": lambda: vpn.reconnect(),
-                b"split": lambda: run_in_split_tunnel(temp[1].decode()),
             }
             if temp[0] in commands:  # Check if received command exists.
                 commands[temp[0]]()
@@ -41,7 +40,7 @@ def start_Usocket(vpn):
     server.close()
 
 
-def send_to_gui(message):
+def send_to_gui(message: str):
     """
     (str) ->
 

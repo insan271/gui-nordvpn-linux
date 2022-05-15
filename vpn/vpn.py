@@ -2,6 +2,7 @@ import signal
 import subprocess, shlex, os, random, threading
 import time, json
 from typing import List
+from unittest import result
 from uSocket import send_to_gui, start_Usocket, send_to_self
 import logging
 from split_tunnel import create_split_tunnel
@@ -166,7 +167,7 @@ class _vpn(object):
         self.connectivity = _connectivity.start_connectivity_monitor(
             self
         )  # returns setup class connectivity
-        self.connecting = False
+        self.trys: int = 0  # Repeted connenction trys
         self._auto_connect()
 
     def connect(self, location: bytes):
@@ -181,6 +182,7 @@ class _vpn(object):
         Starts connection to vpn.
         """
         logging.debug(f"{locals()}")
+        logging.info(f"connecting try:{self.trys}")
         if reconnect:
             self._stop(clear_killswitch=False)
             if not self.active:  # iptables are reset:
@@ -212,6 +214,7 @@ class _vpn(object):
         # Connectivity check.
         if _connectivity.check_connection():
             self.active = True
+            self.trys = 0
             _connectivity.connectivity_reset_timers()
             logging.info("connection complete")
             create_split_tunnel()
@@ -219,6 +222,11 @@ class _vpn(object):
             send_to_gui(f"Connected to {location}")
 
         else:
+            self.trys += 1
+            if self.trys == 2:
+                self.trys = 0
+                self._check_auth()
+                return
             # Parses also doubke vpn to correct location
             # Example: ch
             # nl-ch10.nordvpn.com.tcp
@@ -314,6 +322,27 @@ class _vpn(object):
             logging.info("called")
             if self.command and self.connected_last:
                 self._connect(self.connected_last, reconnect=True)
+
+    def _check_auth(self):
+        """
+        Run when connecting 5 times in a row failed.
+        Send bad auth message
+        """
+        logging.info("Connecting failed  5 times. Testing possible problem")
+        # Test internet.
+        # Internet blocked by iptables so testing in splittunnel.
+        create_split_tunnel()
+        ping = subprocess.run(
+            "novpn timeout 3 ping -c 1 google.com", shell=True, capture_output=True
+        ).stdout.decode()
+        if "1 received" in ping:
+            # Internet detected but connecting to vpn failed
+            # Send bad auth to gui
+            self.stop()
+            send_to_gui("AUTH Failed")
+            logging.error("Connection failed: possible bad auth.")
+        else:
+            logging.info("Connection failed and pauzed retry: no internet detected")
 
     def _get_random_ovpn(self, location: str) -> str:
         """

@@ -61,19 +61,3 @@ def stop_split_tunnel():
     ]
     for x in rules:
         subprocess.run(shlex.split(x))
-
-
-def run_in_split_tunnel(cmd: str):
-    user = (
-        subprocess.run(
-            "who -u | awk '{ print $1 }' | head -n  1  ",
-            shell=True,
-            capture_output=True,
-        )
-        .stdout.decode()
-        .strip()
-    )
-    pre = f"ip netns exec novpn runuser -u {user} "
-    uSocket.send_to_gui(f"Connected:\n{cmd}\noutside vpn \nas {user}")
-
-    subprocess.Popen(shlex.split(pre + cmd))

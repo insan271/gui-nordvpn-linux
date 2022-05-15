@@ -36,6 +36,10 @@ def start_reciever(notifyer, tooltip):
             if "Connected" in data.decode():
                 notifyer("Command", data.decode()).show()
                 tooltip(data.decode())
+
+            elif "AUTH Failed" in data.decode():
+                notifyer("AUTH FAILED", "Uninstall and reinstall nvpn required").show()
+                tooltip("BAD AUTH: please reinstall nvpn with correct credentials")
             elif "Stopped" in data.decode():
                 tooltip("No vpn connection")
 

@@ -21,5 +21,9 @@ sudo rm /usr/local/bin/novpn
 sudo rm -r $HOME/.nvpn
 sudo rm -f /etc/systemd/system/nvpn.service
 sudo rm -f /etc/openvpn/pass.txt
+sudo rm -f /usr/local/bin/novpn
+sudo rm -f /etc/sudoers.d/novpn
+sudo rm -r /usr/local/lib/novpn
+
 rm -f $HOME/.config/autostart/vpncontrol.desktop
 
