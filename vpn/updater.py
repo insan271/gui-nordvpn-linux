@@ -1,8 +1,9 @@
-import os, pickle, datetime, subprocess
+import os, pickle, datetime, subprocess, logging
 
 PATH = os.path.dirname(__file__)
 
 # Only using packages from the standard library. Script run as root. Reason for not using requests package.
+
 
 def update():
     """
@@ -18,7 +19,9 @@ def update():
             subprocess.run("unzip ovpn.zip", shell=True)
             os.remove("ovpn.zip")
             _config_vpnfiles()
-            print("Update vpn files complete.") # Don't remove, install.sh is parsing stdout for this output.
+            logging.info(
+                "Update vpn files complete."
+            )  # Don't remove, install.sh is parsing stdout for this output.
 
 
 def _update_required():

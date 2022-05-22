@@ -14,6 +14,6 @@ NoDisplay=false
 Hidden=false
 Name=vpncontrol
 Comment=VPN controlller for nordvpn
-X-GNOME-Autostart-Delay=0
+X-GNOME-Autostart-Delay=1
 """
 )

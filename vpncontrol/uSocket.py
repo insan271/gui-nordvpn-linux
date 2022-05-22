@@ -5,7 +5,7 @@ import signal
 _SOCK = ""  # Variable that will hold the socket server
 
 
-def send(message):
+def send(message: str):
     """
     (str) ->
     Send a message the unix socket server that controls the vpn.
@@ -33,6 +33,7 @@ def start_reciever(notifyer, tooltip):
         _SOCK = server
         while 1:
             data, _ = server.recvfrom(64)
+            send("status 200")
             if "Connected" in data.decode():
                 notifyer("Command", data.decode()).show()
                 tooltip(data.decode())

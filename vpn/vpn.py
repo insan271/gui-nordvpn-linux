@@ -40,7 +40,6 @@ class _vpn(object):
             self, semaphore
         )  # returns setup class connectivity
         self.trys: int = 0  # Repeted connenction trys
-        self._auto_connect()
 
     def connect(self, location: bytes):
         """External connect method for call by uSocket server"""
@@ -105,7 +104,7 @@ class _vpn(object):
             # ch10.nordvpn.com.tcp
             self._connect(location.split("-")[-1][:2].encode())
 
-    def _auto_connect(self):
+    def auto_connect(self):
         """
         Connects to the most used vpn location if auto connect is enabled.
         """
@@ -117,7 +116,7 @@ class _vpn(object):
                 with open(counter, "r") as f:
                     country = json.load(f)
                     most_used = sorted(country.items(), key=lambda x: -x[1])[0][0]
-                    self._connect(
+                    self.connect(
                         most_used.encode()
                     )  # Start connection to most used location.
 
@@ -182,9 +181,10 @@ class _vpn(object):
         """
         Command that handles stopping a vpn connection external.
         """
-        logging.info("called")
-        self.active = False
-        self._stop()
+        with semaphore:
+            logging.info("called")
+            self.active = False
+            self._stop()
 
     def reconnect(self):
         """

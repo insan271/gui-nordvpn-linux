@@ -10,7 +10,7 @@ After=network-online.target
 
 [Service]
 Type=simple
-ExecStart=bash -c 'until [[ $(pgrep -f vpncontrol) ]]; do sleep 1; done && python3 {PATH_MAIN}'
+ExecStart=python3 {PATH_MAIN}
 
 [Install]
 WantedBy=multi-user.target
