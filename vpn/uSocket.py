@@ -36,7 +36,9 @@ def start_Usocket(vpn):
                 b"connect": lambda: threading.Thread(
                     target=vpn.connect, args=(temp[1],), daemon=True
                 ).start(),
-                b"stop": lambda: vpn.stop(),
+                b"stop": lambda: threading.Thread(
+                    target=vpn.stop, args=(), daemon=True
+                ),
                 b"reconnect": lambda: threading.Thread(
                     target=vpn.reconnect, args=(), daemon=True
                 ).start(),
