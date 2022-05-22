@@ -91,6 +91,7 @@ class _vpn(object):
             create_split_tunnel()
             logging.info("split tunnel available")
             send_to_gui(f"Connected to {location}")
+            self._post_up_scripts()
 
         else:
             self.trys += 1
@@ -176,6 +177,7 @@ class _vpn(object):
             send_to_gui("Stopped")
         if clear_killswitch:
             self.stop_kill_switch(keep_internet_blocked=keep_internet_blocked)
+        self._post_down_scripts()
 
     def stop(self):
         """
@@ -257,6 +259,40 @@ class _vpn(object):
             .stdout.decode()
             .split()[0]
         )
+
+    @staticmethod
+    def _post_up_scripts():
+        """
+        Executes all scripts when vpn connection
+        is up and running in : /etc/nvpn/postup/*
+        Can be used to enable custom iptables.
+        """
+        path = "/etc/nvpn/postup/"
+        if os.path.exists(path):
+            files = (
+                x
+                for x in os.listdir(path)
+                if os.path.isfile(path + x) and os.access(path + x, os.X_OK)
+            )
+            for x in files:
+                subprocess.run(path + x)
+
+    @staticmethod
+    def _post_down_scripts():
+        """
+        Executes all scripts when vpn connection
+        is closed : /etc/nvpn/postup/*
+        Can be used to remove custom rules.
+        """
+        path = "/etc/nvpn/postdown/"
+        if os.path.exists(path):
+            files = (
+                x
+                for x in os.listdir(path)
+                if os.path.isfile(path + x) and os.access(path + x, os.X_OK)
+            )
+            for x in files:
+                subprocess.run(path + x)
 
 
 def start_vpn():

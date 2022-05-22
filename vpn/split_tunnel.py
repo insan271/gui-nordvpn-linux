@@ -55,6 +55,7 @@ def stop_split_tunnel():
         "ip netns del novpn",
         "rm -fr /etc/netns/novpn",
         "ip route flush table 100",
+        "ip rule del fwmark 345345 table 100",
     ]
     for x in rules:
         subprocess.run(shlex.split(x))
