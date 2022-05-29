@@ -90,7 +90,7 @@ After the vpn is started/ended it looks in the directory's
 
 This directory isn’t created by the program itself so it needs to be created manually:
 
-** .sudo mkdir -p /etc/nvpn/postup && sudo mkdir -p /etc/nvpn/postdown **
+**sudo mkdir -p /etc/nvpn/postup && sudo mkdir -p /etc/nvpn/postdown**
 
 It only executes scripts with executable permissions so give the script permission with :
 
