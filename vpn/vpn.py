@@ -92,10 +92,11 @@ class _vpn(object):
             logging.info("split tunnel available")
             send_to_gui(f"Connected to {location}")
             self._post_up_scripts()
+            self.dedup_iptables()
 
         else:
             self.trys += 1
-            if self.trys == 2:
+            if self.trys == 3:
                 self.trys = 0
                 self._check_auth()
                 return
@@ -293,6 +294,16 @@ class _vpn(object):
             )
             for x in files:
                 subprocess.run(path + x)
+
+    @staticmethod
+    def dedup_iptables():
+        """
+        Removes duplicate iptables
+        """
+        subprocess.run(
+            "iptables-save | awk '/^COMMIT$/ { delete x; }; !x[$0]++' | sudo iptables-restore",
+            shell=True,
+        )
 
 
 def start_vpn():
