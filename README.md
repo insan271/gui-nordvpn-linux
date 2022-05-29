@@ -1,5 +1,9 @@
 # gui-nordvpn-linux description:
 
+**New release 30 March 2022.
+Added features split-tunnel, buildin connectivty checks and minor bug fixes
+**
+
 A gui for connecting to nordvpn servers on linux mint.
 It uses openvpn for connecting to nordvpn servers. And gtk for python to create a system trayicon and gui.
 
@@ -78,6 +82,20 @@ Example:
 
 Or for desktop icons right click and select **Properties**
 and add **novpn** in front of the **Command Field**
+
+# Adding custom iptables or run extra scripts on vpn start/end :
+
+After the vpn is started/ended it looks in the directory's  
+ /etc/nvpn/postup (started) or /etc/nvpn/postdown (ended) for extra scripts to run.
+
+This directory isn’t created by the program itself so it needs to be created manually:
+
+** .sudo mkdir -p /etc/nvpn/postup && sudo mkdir -p /etc/nvpn/postdown **
+
+It only executes scripts with executable permissions so give the script permission with :
+
+**sudo chmod +x
+scriptName.sh**
 
 # Note's for other developers that will read the code:
 
