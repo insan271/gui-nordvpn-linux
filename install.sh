@@ -61,7 +61,15 @@ esac
 
 # Installing needed dependencies
 echo "Installing needed apt dependencies: "
-sudo apt install iptables openvpn libgirepository1.0-dev gcc libcairo2-dev pkg-config python3-dev gir1.2-gtk-3.0 python3-venv resolvconf
+
+case $(sudo apt list --installed | grep openresolv) in 
+  *"openresolv"*)
+        ;;
+  *) 
+    sudo apt install resolvconf
+esac
+
+sudo apt install iptables openvpn libgirepository1.0-dev gcc libcairo2-dev pkg-config python3-dev gir1.2-gtk-3.0 python3-venv
 
 # Creating installation path
 basePATH="$( cd "$( dirname "$BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)"
@@ -118,6 +126,7 @@ $HOME/.nvpn/vpncontrol/venv/bin/pip install -r $HOME/.nvpn/vpncontrol/requiremen
 python3 $basePATH/installTools/setupAutostart.py > $HOME/.config/autostart/vpncontrol.desktop
  
 # Downloading images for vpncontroller gui
+mkdir -p $HOME/.nvpn/vpncontrol/flags
 cd $HOME/.nvpn/vpncontrol/flags
 echo "Downloading images needed for gui."
 curl -O https://flagcdn.com/128x96.zip
