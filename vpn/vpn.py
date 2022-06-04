@@ -276,7 +276,7 @@ class _vpn(object):
                 if os.path.isfile(path + x) and os.access(path + x, os.X_OK)
             )
             for x in files:
-                subprocess.run(path + x)
+                subprocess.run(path + x, shell=True)
 
     @staticmethod
     def _post_down_scripts():
@@ -293,7 +293,7 @@ class _vpn(object):
                 if os.path.isfile(path + x) and os.access(path + x, os.X_OK)
             )
             for x in files:
-                subprocess.run(path + x)
+                subprocess.run(path + x, shell=True)
 
     @staticmethod
     def dedup_iptables():
