@@ -43,7 +43,7 @@ esac
 pyvf=$(python3 --version | sed 's/[^0-9.]*//g' | head -c4 | sed 's/\.$//')
 pyvMain=$(echo "$pyvf" | head -c1  )
 pyvSub=$(echo "$pyvf" | cut -d "." -f 2 )
-if [ "$pyvMain" -eq 3 ] && [ "$pyvSub" -gt 6 ] ; then
+if [ "$pyvMain" -eq 3 ] && [ "$pyvSub" -ge 6 ] ; then
     echo "Python version is ok."
 else
     echo "Can't install on this systen. Needs python version >= 3.6"
