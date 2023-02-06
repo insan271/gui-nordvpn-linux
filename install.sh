@@ -40,8 +40,10 @@ case $(which bc) in
 esac
 
 # Checking if correct python version is installed
-pyv=$(python3 --version | sed 's/[^0-9.]*//g' | head -c3)
-if [ $(echo "$pyv >= 3.6" |bc -l) -gt 0 ]; then
+pyvf=$(python3 --version | sed 's/[^0-9.]*//g' | head -c4 | sed 's/\.$//')
+pyvMain=$(echo "$pyvf" | head -c1  )
+pyvSub=$(echo "$pyvf" | cut -d "." -f 2 )
+if [ "$pyvMain" -eq 3 ] && [ "$pyvSub" -gt 6 ] ; then
     echo "Python version is ok."
 else
     echo "Can't install on this systen. Needs python version >= 3.6"
