@@ -132,7 +132,7 @@ class _vpn(object):
         logging.info("called")
         local_net = subprocess.check_output(
             "ip route | awk '/default/ { print $3 }' | sed 's/.$/0\/24/g'", shell=True
-        ).decode()
+        ).decode().split()[0]
         rules = [
             "iptables -P OUTPUT DROP",
             "iptables -A OUTPUT -o lo -j ACCEPT",

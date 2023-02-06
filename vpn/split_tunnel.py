@@ -17,12 +17,12 @@ def create_split_tunnel():
     IFACE_INTERNET = (
         subprocess.check_output("route | awk '/default/ { print $NF }'", shell=True)
         .decode()
-        .strip()
+        .split()[0]
     )
     GETAWAY = (
         subprocess.check_output("ip route | awk '/default/ { print $3 }'", shell=True)
         .decode()
-        .strip()
+        .split()[0]
     )
     DNS = GETAWAY
 
