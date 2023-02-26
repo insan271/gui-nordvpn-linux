@@ -6,6 +6,7 @@ from uSocket import send_to_gui, start_Usocket
 import logging
 from split_tunnel import create_split_tunnel
 from connectivity import _connectivity
+from time import sleep
 
 """
 
@@ -39,7 +40,7 @@ class _vpn(object):
         self.connectivity = _connectivity.start_connectivity_monitor(
             self, semaphore
         )  # returns setup class connectivity
-        self.trys: int = 0  # Repeted connenction trys
+        self.trys: int = 0  # Repeted connection trys
 
     def connect(self, location: bytes):
         """External connect method for call by uSocket server"""
@@ -54,6 +55,9 @@ class _vpn(object):
         """
         logging.debug(f"{locals()}")
         logging.info(f"connecting try:{self.trys}")
+
+        self.main_interface_up() # require main interfact up
+
         if reconnect:
             self._stop(clear_killswitch=False)
             if not self.active:  # iptables are reset:
@@ -122,6 +126,23 @@ class _vpn(object):
                         most_used.encode()
                     )  # Start connection to most used location.
 
+    @staticmethod
+    def main_interface_up():
+        """
+        Require main interface is up on system boot
+        """
+        gateway = ""
+        counter = 0
+        while not gateway or counter < 30 :
+            gateway = subprocess.check_output(
+                "ip route | awk '/default/ { print $3 }'", shell=True
+                ).decode()
+            if gateway: break
+            counter+=1
+            sleep(1)
+        if not gateway:
+            raise Exception("Can't find route to default interface gateway.")   
+        
     @staticmethod
     def start_kill_switch(vpn_ip: str):
         """
