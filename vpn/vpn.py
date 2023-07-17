@@ -7,6 +7,7 @@ import logging
 from split_tunnel import create_split_tunnel
 from connectivity import _connectivity
 from time import sleep
+from airvpn import vpnFile
 
 """
 
@@ -31,11 +32,12 @@ class _vpn(object):
     Class that holds all actions to control/setup the vpn
     """
 
-    def __init__(self):
+    def __init__(self, mode: str):
+        self.mode = mode
         self.subp = []  # contains the openvpn process
         self.command = []  # openvpn command
         self.connected_last = ""
-        self._vpn_files = self._get_vpn_files()
+        self._vpn_files = self._get_vpn_files() if mode != "airvpn" else []
         self.active = False  # vpn is running or needs to run
         self.connectivity = _connectivity.start_connectivity_monitor(
             self, semaphore
@@ -247,9 +249,12 @@ class _vpn(object):
         Return a random ovpn file for input location.
         """
         # temp = [x for x in self._vpn_files if location in x.split(".")[0]]
-        temp = [x for x in self._vpn_files if location in x.split("-")[-1][:2]]
-        assert temp, "Expected to find vpn files"
-        return random.choice(temp)
+        if self.mode != "airvpn":
+            temp = [x for x in self._vpn_files if location in x.split("-")[-1][:2]]
+            assert temp, "Expected to find vpn files"
+            return random.choice(temp)
+        else:
+            return vpnFile.get_airvpn_ovpn()
 
     @staticmethod
     def _get_vpn_files() -> List[str]:
@@ -327,11 +332,11 @@ class _vpn(object):
         )
 
 
-def start_vpn():
+def start_vpn(mode: str):
     """
     Start's the unix socket that will control the vpn
     """
-    vpn = _vpn()
+    vpn = _vpn(mode)
     start_Usocket(vpn)
 
 
