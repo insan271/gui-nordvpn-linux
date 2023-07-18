@@ -20,7 +20,7 @@ if __name__ == "__main__":
     if mode != "airvpn":
         update()
     else:
-        updater.
+        updater.force_update()
     # Wait unitil vpncontrol is running
     subprocess.run(
         "bash -c 'until [[ $(pgrep -f vpncontrol) ]]; do sleep 1; done'", shell=True
