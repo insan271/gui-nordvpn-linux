@@ -1,12 +1,20 @@
 from updater import update
 from vpn import start_vpn
 import subprocess
+import os
 
 """
 TODO:
     - Fix update holding back vpn start. Use threads and make threadsafe.
 """
-mode = "airvpn"
+
+PATH_HOME = "/".join(
+    os.path.abspath(__file__).split("/")[:3]
+) 
+PATH_AIRFLAG = os.path.join(PATH_HOME, ".nvpn", ".airvpn")
+mode = "airvpn" if os.path.exists(PATH_AIRFLAG) else "nordvpn"
+
+
 if __name__ == "__main__":
     update()
     # Wait unitil vpncontrol is running
