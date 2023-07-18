@@ -1,7 +1,8 @@
-import os, pickle, datetime, subprocess, logging, urllib.request, json
+import os, pickle, datetime, logging, urllib.request
 
-PATH = os.path.abspath(os.path.join('__file__', '..'))
+from pathlib import Path
 
+PATH = Path(__file__).parents[1]
 
 # Only using packages from the standard library. Script run as root. Reason for not using requests package.
 def force_update():

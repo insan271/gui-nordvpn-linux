@@ -2,4 +2,6 @@ ovpn_tcp
 ovpn_udp
 .vscode
 __pycache__/
+client.crt
+client.key
 

@@ -83,10 +83,14 @@ class _vpn(object):
             self.start_kill_switch(
                 self._get_vpn_file_ip(os.path.join(PATH_VPN_FILES, location))
             )
-
-            self.command = shlex.split(
-                f"openvpn --config {os.path.join(PATH_VPN_FILES, location)} --auth-user-pass /etc/openvpn/pass.txt"
-            )
+            if self.mode == "airvpn":
+                self.command = shlex.split(
+                    f"openvpn --config {os.path.join(PATH_VPN_FILES, location)}"
+                )
+            else:    
+                self.command = shlex.split(
+                    f"openvpn --config {os.path.join(PATH_VPN_FILES, location)} --auth-user-pass /etc/openvpn/pass.txt"
+                )
 
         # Start vpn.
         p = subprocess.Popen(self.command)
