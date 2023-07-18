@@ -6,10 +6,10 @@ PATH = os.path.abspath(os.path.join('__file__', '..'))
 # Only using packages from the standard library. Script run as root. Reason for not using requests package.
 def force_update():
         try:
-            req = urllib.request.urlopen(url)
+            req = urllib.request.urlopen("https://airvpn.org/api/status/")
             if req.code == 200:
                 with open(os.path.join(PATH, 'airvpn.json'), "w") as f:
-                    json.dump(req.read().decode(), f)
+                    f.write(req.read().decode())
                     logging.info(
                         "Update vpn files complete."
                     ) 
@@ -19,7 +19,6 @@ def update():
     """
     Download airvpn server list.
     """
-    url = "https://airvpn.org/api/status/"
     if _update_required():
         force_update()
 

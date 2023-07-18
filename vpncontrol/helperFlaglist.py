@@ -1,6 +1,7 @@
 import os, json, urllib.request
 from uSocket import send
 import logging
+from collections import defaultdict
 
 logging.basicConfig(
     format="%(levelname)s:%(funcName)s:%(message)s",
@@ -123,12 +124,12 @@ def _read_count_flag():
     if os.path.exists(COUNTER_FILE):
         with open(COUNTER_FILE, "r") as r:
             data = json.load(r)
-        return data
+        return defaultdict(int, data)
     else:
         with open(COUNTER_FILE, "w") as f:
             data = {k: 0 for k in get_flag_dict()}
             json.dump(data, f)
-        return data
+        return defaultdict(int, data)
 
 
 def _write_count_flag(flag):

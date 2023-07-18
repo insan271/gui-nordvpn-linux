@@ -34,6 +34,7 @@ class _vpn(object):
 
     def __init__(self, mode: str):
         self.mode = mode
+        logging.info(f"MODE: {mode}")
         if mode == "airvpn":
             self.airvpn_ip =  subprocess.check_output("ping -c 2 airvpn.org | head -2 | tail -1 | awk '{print $5}' | sed 's/[(:)]//g'", shell=True).decode().rstrip()
         self.subp = []  # contains the openvpn process
@@ -71,10 +72,12 @@ class _vpn(object):
                 )
 
         else:
+            location = self._get_random_ovpn(location.decode())  # vpn file as string
+
             self._stop(
                 keep_internet_blocked=True
             )  # TODO add option clear kill switch block all trafic until new kill switch started
-            location = self._get_random_ovpn(location.decode())  # vpn file as string
+            
 
             # Start kill switch.
             self.start_kill_switch(
@@ -185,8 +188,6 @@ class _vpn(object):
         if keep_internet_blocked:
             rules.pop()
             rules.append("iptables -P OUTPUT DROP")
-            if self.mode == "airvpn": # airvpn has no ovpn file list. need access to api to create ovpn
-                rules.append(f"iptables -A OUTPUT -d {self.airvpn_ip} -j ACCEPT")
 
         for x in rules:
             subprocess.run(shlex.split(x))
