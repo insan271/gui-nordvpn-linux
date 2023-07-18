@@ -74,7 +74,10 @@ MODE = "airvpn" if os.path.exists(os.path.join(PATH_BASE, '.airvpn')) else "nord
 
 logging.info(f"Using mode {MODE}")
 
-def country_names_arivpn():
+def country_names_airvpn():
+    """
+    Makes country names dict for flag gui buttons airvpn.
+    """
     servers = {}
     try:
         req = urllib.request.urlopen("https://airvpn.org/api/status/")
@@ -105,7 +108,7 @@ def get_flag_dict():
     """
     flag_files = {x.split(".")[0] for x in os.listdir(PATH_FLAGS)}
     if (MODE == "airvpn"):
-        return country_names_arivpn()
+        return country_names_airvpn()
     else:
         return {k: v for k, v in COUNTRY_NAMES.items() if k in flag_files}
 
