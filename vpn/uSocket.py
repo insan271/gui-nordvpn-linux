@@ -43,6 +43,9 @@ def start_Usocket(vpn):
                     target=vpn.reconnect, args=(), daemon=True
                 ).start(),
                 b"status": lambda: received(),
+                b"vpnStatus": lambda: threading.Thread(
+                    target=send_to_gui, args=(vpn.active_string,), daemon=True
+                ).start()
             }
             if temp[0] in commands:  # Check if received command exists.
                 commands[temp[0]]()
@@ -65,7 +68,7 @@ def send_to_gui(message: str):
     Sends message to the gui script socket server.
     """
     timeout = 0
-    limit = 60
+    limit = 10
     send_to_gui.received = False
     while not send_to_gui.received and timeout < limit:
         try:

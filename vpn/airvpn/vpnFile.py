@@ -1,8 +1,8 @@
 import os, logging, json, random
 from airvpn import updater
-from operator import itemgetter
+from pathlib import Path
 
-PATH = os.path.abspath(os.path.join('__file__', '..'))
+PATH = Path(__file__).parents[1]
 JSON = os.path.join(PATH, 'airvpn.json')
 
 def get_airvpn_ovpn(location: str) -> str:

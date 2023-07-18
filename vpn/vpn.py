@@ -34,11 +34,14 @@ class _vpn(object):
 
     def __init__(self, mode: str):
         self.mode = mode
+        if mode == "airvpn":
+            self.airvpn_ip =  subprocess.check_output("ping -c 2 airvpn.org | head -2 | tail -1 | awk '{print $5}' | sed 's/[(:)]//g'", shell=True).decode().rstrip()
         self.subp = []  # contains the openvpn process
         self.command = []  # openvpn command
         self.connected_last = ""
         self._vpn_files = self._get_vpn_files() if mode != "airvpn" else []
         self.active = False  # vpn is running or needs to run
+        self.active_string = "Disconnected"
         self.connectivity = _connectivity.start_connectivity_monitor(
             self, semaphore
         )  # returns setup class connectivity
@@ -92,11 +95,12 @@ class _vpn(object):
         if _connectivity.check_connection():
             self.active = True
             self.trys = 0
+            self.active_string = f"Connected to {location.split('/')[-1]}"
             _connectivity.connectivity_reset_timers()
             logging.info("connection complete")
             create_split_tunnel()
             logging.info("split tunnel available")
-            send_to_gui(f"Connected to {location}")
+            send_to_gui(self.active_string)
             self._post_up_scripts()
             self.dedup_iptables()
 
@@ -164,12 +168,12 @@ class _vpn(object):
             "iptables -A OUTPUT -o tun+ -j ACCEPT",
         ]
 
+
         for x in rules:
             subprocess.run(shlex.split(x))
         logging.info("kill switch ON")
 
-    @staticmethod
-    def stop_kill_switch(keep_internet_blocked=False):
+    def stop_kill_switch(self, keep_internet_blocked=False):
         """
         Flushes kill swith.
         """
@@ -181,6 +185,8 @@ class _vpn(object):
         if keep_internet_blocked:
             rules.pop()
             rules.append("iptables -P OUTPUT DROP")
+            if self.mode == "airvpn": # airvpn has no ovp file list. need access to api to create ovpn
+                rules.append(f"iptables -A OUTPUT -d {self.airvpn_ip} -j ACCEPT")
 
         for x in rules:
             subprocess.run(shlex.split(x))
@@ -190,6 +196,7 @@ class _vpn(object):
         Command that handles stopping a vpn connection internal.
         """
         logging.debug("called")
+        self.active_string = "Disconnected"
         if self.subp:
             for x in self.subp:
                 # x.terminate()
@@ -254,7 +261,7 @@ class _vpn(object):
             assert temp, "Expected to find vpn files"
             return random.choice(temp)
         else:
-            return vpnFile.get_airvpn_ovpn()
+            return vpnFile.get_airvpn_ovpn(location)
 
     @staticmethod
     def _get_vpn_files() -> List[str]:

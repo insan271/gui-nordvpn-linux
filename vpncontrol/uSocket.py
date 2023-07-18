@@ -26,17 +26,18 @@ def start_reciever(notifyer, tooltip):
     Starts a unix socket server for receiving messages from vpn scripts.
     """
 
-    def usock(notifyer, tooltip):
+    def usock(notifyer, status):
         server = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
         server.bind("\0trayiconvpn")
         global _SOCK
         _SOCK = server
+        send("vpnStatus") # ask if server is connected
         while 1:
             data, _ = server.recvfrom(64)
             send("status 200")
             if "Connected" in data.decode():
                 notifyer("Command", data.decode()).show()
-                tooltip(data.decode())
+                status.set_label(f"Status: {data.decode()}")
 
             elif "AUTH Failed" in data.decode():
                 notifyer("AUTH FAILED", "Uninstall and reinstall nvpn required").show()
@@ -44,7 +45,7 @@ def start_reciever(notifyer, tooltip):
             elif "splittunnel" in data.decode():
                 notifyer("SplitTunnel", data.decode()).show()
             elif "Stopped" in data.decode():
-                tooltip("No vpn connection")
+                status.set_label("Status: Disconnected")
 
     signal.signal(signal.SIGINT, stop_receiver)  # Capture sigint for closing the server
     Thread(
