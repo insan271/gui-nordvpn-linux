@@ -39,6 +39,8 @@ class FlowBoxWindow(Gtk.Window):
 
     def create_flowbox(self, flowbox):
         for k, v in get_sorted_flag_dict().items():
+            org_k = k
+            if k == 'gb': k = "uk"
             img = Gtk.Image.new_from_file(os.path.join(PATH_FLAGS, f"{k}.png"))
             label = Gtk.Label(v.split(",")[0])
             button = Gtk.Button()
@@ -47,7 +49,7 @@ class FlowBoxWindow(Gtk.Window):
             grid.attach(label, 0, 1, 1, 1)
             grid.show_all()
             button.add(grid)
-            button.connect("clicked", self.button_clicked, k)
+            button.connect("clicked", self.button_clicked, org_k)
 
             flowbox.add(button)
 

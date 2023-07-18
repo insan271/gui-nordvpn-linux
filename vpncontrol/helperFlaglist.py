@@ -1,5 +1,11 @@
-import os, json
+import os, json, urllib.request
 from uSocket import send
+import logging
+
+logging.basicConfig(
+    format="%(levelname)s:%(funcName)s:%(message)s",
+    level=logging.INFO,
+)
 
 COUNTRY_NAMES = {
     "al": "Albania",
@@ -64,7 +70,32 @@ COUNTRY_NAMES = {
 PATH_BASE = os.path.split(os.path.abspath(__file__))[0]
 PATH_FLAGS = os.path.join(PATH_BASE, "flags")
 COUNTER_FILE = os.path.join(os.path.expanduser("~"), ".nvpn", "counter.json")
+MODE = "airvpn" if os.path.exists(os.path.join(PATH_BASE, '.airvpn')) else "nordvpn"
 
+logging.info(f"Using mode {MODE}")
+
+def country_names_arivpn():
+    servers = {}
+    try:
+        req = urllib.request.urlopen("https://airvpn.org/api/status/")
+        if req.code == 200:
+            servers = json.load(req)['servers'] 
+    except: logging.warning("Can't access airvpn api server")
+
+    if servers:
+        country_names = {y['country_code']: y['country_name'] for y in servers}
+        with open(os.path.join(PATH_BASE, "air.json"), "w") as f:
+            json.dump(country_names, f)
+        logging.info("Got available server from airvpn api server")
+        return country_names
+    else:
+        try:
+            with open(os.path.join(PATH_BASE, "air.json"), "w") as f:
+                logging.info("OFFLINE MODE: Got available server from airvpn api server")
+                return json.load(f)
+        except:
+            logging.info("Can't access online and offline airvpn servers.\n Using preprogrammed instead.")
+            return COUNTRY_NAMES
 
 def get_flag_dict():
     """
@@ -73,7 +104,10 @@ def get_flag_dict():
     Returns all country names that have an img 
     """
     flag_files = {x.split(".")[0] for x in os.listdir(PATH_FLAGS)}
-    return {k: v for k, v in COUNTRY_NAMES.items() if k in flag_files}
+    if (MODE == "airvpn"):
+        return country_names_arivpn()
+    else:
+        return {k: v for k, v in COUNTRY_NAMES.items() if k in flag_files}
 
 
 def _read_count_flag():

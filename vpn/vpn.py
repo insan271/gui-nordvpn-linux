@@ -185,7 +185,7 @@ class _vpn(object):
         if keep_internet_blocked:
             rules.pop()
             rules.append("iptables -P OUTPUT DROP")
-            if self.mode == "airvpn": # airvpn has no ovp file list. need access to api to create ovpn
+            if self.mode == "airvpn": # airvpn has no ovpn file list. need access to api to create ovpn
                 rules.append(f"iptables -A OUTPUT -d {self.airvpn_ip} -j ACCEPT")
 
         for x in rules:
