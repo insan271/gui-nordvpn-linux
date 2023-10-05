@@ -68,7 +68,7 @@ def _config_vpnfiles():
         textsplit2 = text[find + 1 :]
         textinject = (
             textslpit1
-            + "script-security 2\nup /etc/openvpn/update-resolv-conf\ndown /etc/openvpn/update-resolv-conf\n"
+            + "dhcp-option DOMAIN-ROUTE .\nscript-security 2\nup /etc/openvpn/update-systemd-resolved\ndown /etc/openvpn/update-systemd-resolved\n"
             + textsplit2
         )
         w = open(os.path.join(path_ovpn, file), "w")

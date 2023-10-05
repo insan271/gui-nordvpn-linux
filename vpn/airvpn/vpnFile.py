@@ -51,9 +51,10 @@ data-ciphers AES-256-GCM:AES-256-CBC:AES-192-GCM:AES-192-CBC:AES-128-GCM:AES-128
 data-ciphers-fallback AES-256-CBC
 proto udp
 auth SHA512
+dhcp-option DOMAIN-ROUTE .
 script-security 2
-up /etc/openvpn/update-resolv-conf
-down /etc/openvpn/update-resolv-conf
+up /etc/openvpn/update-systemd-resolved
+down /etc/openvpn/update-systemd-resolved
 <ca>
 -----BEGIN CERTIFICATE-----
 MIIGVjCCBD6gAwIBAgIJAIzYQ+/kXyADMA0GCSqGSIb3DQEBDQUAMHkxCzAJBgNV
