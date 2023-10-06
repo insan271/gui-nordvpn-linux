@@ -18,11 +18,14 @@ def start_Usocket(vpn):
     def end(sig, frame):
         print("sig end")
         vpn.stop()
-        nonlocal server
-        server.close()
-        sys.exit(0)
+        send_to_self("end")
 
-    signal.signal(signal.SIGINT, end)
+    signal.signal(signal.SIGINT, lambda sig,frame: threading.Thread(
+                    target=end, args=(sig, frame)
+                ).start())
+    signal.signal(signal.SIGTERM, lambda sig,frame: threading.Thread(
+                    target=end, args=(sig, frame)
+                ).start())
 
     while 1:
         data, _ = server.recvfrom(128)
