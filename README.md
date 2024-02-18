@@ -5,12 +5,11 @@
 The "partly maintained" status of this repo entails:
 
 - The main branch is currently unmaintained.
-  
+
 - There is a second experimental branch in this repo that continues to receive updates and fixes.
-  However, this branch is patched and only tested to use a different VPN provider. It strives to maintain backward compatibility with NordVPN but this is not verifiyed.
+  However, this branch is patched and only tested to use a different VPN provider. It strives to maintain backward compatibility with NordVPN but this is not verified.
 
 # gui-nordvpn-linux description:
-
 
 A gui for connecting to nordvpn servers on linux mint.
 It uses openvpn for connecting to nordvpn servers. And gtk for python to create a system trayicon and gui.
@@ -40,7 +39,7 @@ Preview GUI:
 
 # Don't install when:
 
-- You use iptables for other applications. Stopping a vpn conection is currently programmed to flush all rules.
+- You use iptables for other applications. Stopping a vpn connection is currently programmed to flush all rules.
 
 # Installation:
 
@@ -50,12 +49,11 @@ Download :
 
 **git clone https://github.com/insan271/gui-nordvpn-linux.git**
 
-
 Optional switch to experimental branch:
 
 **git checkout airvpn**
 
-Give install.sh executable permision:
+Give install.sh executable permission:
 
 **cd gui-nordvpn-linux && chmod +x install.sh**
 
@@ -70,17 +68,21 @@ Once installed the credentials can't be changed.
 So make sure these are correct or a uninstall and reinstall are needed.
 
 If the install failed make sure to run the uninstall script for cleaning up.
-Bug reports should contain the ouput from the install script and the output of sudo systemctl status nvpn.service.
-
-
+Bug reports should contain the output from the install script.
+or logs from **journalctl -u nvpn.service | tail -n 200*
 
 # Uninstall:
 
 Open a terminal in the location uninstall.sh is present.
 
-Give it executable permision(**chmod +x uninstall.sh**).
+Give it executable permission(**chmod +x uninstall.sh**).
 
 Run the uninstall script(**./uninstall.sh**).
+
+# Switching from experimental  to main branch:
+
+A full uninstall is required.
+After reinstall and replace from the install section **~~git checkout airvpn~~** with **git checkout main**
 
 # Using the split-tunnel:
 
