@@ -50,17 +50,6 @@ else
     exit 1
 fi
 
-# Checking if kill switch is supported. Router ip range needs to be 192.168.1.* else system not supported
-case $(sudo route | grep "192.168.1.0" | head -n 1) in
-    *"192.168.1.0"*)
-        echo "Killswitch support. OK.";;
-        
-    *)
-        echo "Failed to install. System not supported. Router ip range other than 192.168.1.* gives problem with killswitch"
-        exit 1;
-esac
-
-
 # Installing needed dependencies
 echo "Installing needed apt dependencies: "
 
