@@ -1,8 +1,16 @@
+**Status: Partly Maintained**
+
+**Warning:** The owner of this repo has discontinued their NordVPN subscription. As a result, any changes introduced by NordVPN after 2023 may cause bugs or, in the worst case, make this software unusable.
+
+The "partly maintained" status of this repo entails:
+
+- The main branch is currently unmaintained.
+  
+- There is a second experimental branch in this repo that continues to receive updates and fixes.
+  However, this branch is patched and only tested to use a different VPN provider. It strives to maintain backward compatibility with NordVPN but this is not verifiyed.
+
 # gui-nordvpn-linux description:
 
-**New release 30 March 2022.
-Added features split-tunnel, buildin connectivty checks and minor bug fixes
-**
 
 A gui for connecting to nordvpn servers on linux mint.
 It uses openvpn for connecting to nordvpn servers. And gtk for python to create a system trayicon and gui.
@@ -33,7 +41,6 @@ Preview GUI:
 # Don't install when:
 
 - You use iptables for other applications. Stopping a vpn conection is currently programmed to flush all rules.
-- Multiple users are on your linux installation. The trayicon only shows for the user that installed it. The systemd service starts for every user login.
 
 # Installation:
 
@@ -42,6 +49,11 @@ Follow these steps in a terminal.
 Download :
 
 **git clone https://github.com/insan271/gui-nordvpn-linux.git**
+
+
+Optional switch to experimental branch:
+
+**git checkout airvpn**
 
 Give install.sh executable permision:
 
@@ -59,6 +71,8 @@ So make sure these are correct or a uninstall and reinstall are needed.
 
 If the install failed make sure to run the uninstall script for cleaning up.
 Bug reports should contain the ouput from the install script and the output of sudo systemctl status nvpn.service.
+
+
 
 # Uninstall:
 

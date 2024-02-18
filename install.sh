@@ -50,17 +50,6 @@ else
     exit 1
 fi
 
-# Checking if kill switch is supported. Router ip range needs to be 192.168.1.* else system not supported
-case $(sudo route | grep "192.168.1.0" | head -n 1) in
-    *"192.168.1.0"*)
-        echo "Killswitch support. OK.";;
-        
-    *)
-        echo "Failed to install. System not supported. Router ip range other than 192.168.1.* gives problem with killswitch"
-        exit 1;
-esac
-
-
 # Installing needed dependencies
 echo "Installing needed apt dependencies: "
 
@@ -71,7 +60,7 @@ case $(sudo apt list --installed | grep openresolv) in
     sudo apt install resolvconf
 esac
 
-sudo apt install iptables openvpn openvpn-systemd-resolved libgirepository1.0-dev gcc libcairo2-dev pkg-config python3-dev gir1.2-gtk-3.0 python3-venv gir1.2-appindicator3-0.1
+sudo apt install iptables openvpn libgirepository1.0-dev gcc libcairo2-dev pkg-config python3-dev gir1.2-gtk-3.0 python3-venv
 
 # Creating installation path
 basePATH="$( cd "$( dirname "$BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)"
