@@ -60,7 +60,7 @@ case $(sudo apt list --installed | grep openresolv) in
     sudo apt install resolvconf
 esac
 
-sudo apt install iptables openvpn libgirepository1.0-dev gcc libcairo2-dev pkg-config python3-dev gir1.2-gtk-3.0 python3-venv
+sudo apt install iptables openvpn openvpn-systemd-resolved libgirepository1.0-dev gcc libcairo2-dev pkg-config python3-dev gir1.2-gtk-3.0 python3-venv
 
 # Creating installation path
 basePATH="$( cd "$( dirname "$BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)"
